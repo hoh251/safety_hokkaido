@@ -1,7 +1,7 @@
 import requests
 import json
 from config import config
-from src.tools import (
+from external_data.tools import (
     get_real_time_weather, WEATHER_TOOL_SCHEMA,
     get_disaster_warnings, DISASTER_TOOL_SCHEMA,
     check_train_status, TRAIN_TOOL_SCHEMA

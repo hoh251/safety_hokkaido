@@ -6,7 +6,7 @@ import requests
 # Add parent directory to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.rag_pipeline import RAGPipeline
+from agent_core.pipeline import RAGPipeline
 from config import config
 
 def evaluate_with_llm_judge(question, answer, context):

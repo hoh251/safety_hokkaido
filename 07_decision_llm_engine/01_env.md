@@ -1,3 +1,3 @@
 # Environment
 
-Grounded answer generation uses the configured Groq model and system prompt in `02_api_backend/src/generator.py` and `config.py`.
+Grounded answer generation is implemented in `decision_engine/generator.py`; model configuration stays in `02_api_backend/config.py`.

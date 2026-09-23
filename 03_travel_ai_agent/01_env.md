@@ -1,3 +1,3 @@
 # Environment
 
-The orchestration service runs within `02_api_backend`. Its current source files are `src/router.py`, `src/rag_pipeline.py`, `src/query_transform.py`, and `src/memory.py`.
+The orchestration package is `agent_core/` in this module. The FastAPI service imports it through the repository bootstrap.

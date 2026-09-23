@@ -1,10 +1,21 @@
+from pathlib import Path
+import sys
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from runtime import configure_module_paths
+
+configure_module_paths()
+
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
 # Import our newly built RAG Pipeline
-from src.rag_pipeline import RAGPipeline
+from agent_core.pipeline import RAGPipeline
 
 app = FastAPI()
 
@@ -60,7 +71,7 @@ def ask_ai(req: ChatRequest):
 
 @app.post("/reset_memory")
 def reset_memory():
-    from src.memory import global_memory
+    from agent_core.memory import global_memory
     global_memory.clear()
     return {"status": "Memory wiped."}
 

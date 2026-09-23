@@ -1,7 +1,7 @@
 import json
 import os
 import glob
-from src.text_splitter import TextSplitter
+from data_integration.text_splitter import TextSplitter
 
 try:
     from pypdf import PdfReader

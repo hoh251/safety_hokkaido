@@ -16,12 +16,12 @@ Safety Hokkaido is an AI travel-safety assistant for Hokkaido. It combines a mul
 |---|---|---|
 | `01_web_app` | Traveler-facing UI, localization, chat client | Next.js application |
 | `02_api_backend` | HTTP API, validation, CORS, service startup | FastAPI `main.py` |
-| `03_travel_ai_agent` | Intent routing and orchestration | `src/router.py`, `src/rag_pipeline.py` |
-| `04_external_data_services` | Weather, disaster and rail adapters | `src/tools.py` |
-| `05_data_integration` | Loading, splitting, embeddings and indices | `document_loader`, `text_splitter`, `embedding_model`, `vector_store` |
-| `06_risk_knowledge_services` | Hybrid retrieval, reranking and verified safety corpus | `hybrid_retriever`, `rerankers`, `data/` |
-| `07_decision_llm_engine` | Grounded generation and safety policy | `generator.py`, `config.py` |
-| `08_recommendation_feedback` | Evaluation, evidence and future feedback loop | `evaluation/`, planned feedback API |
+| `03_travel_ai_agent` | Intent routing and orchestration | `agent_core/` |
+| `04_external_data_services` | Weather, disaster and rail adapters | `external_data/` |
+| `05_data_integration` | Loading, splitting, embeddings and indices | `data_integration/` |
+| `06_risk_knowledge_services` | Hybrid retrieval, reranking and verified safety corpus | `risk_knowledge/` |
+| `07_decision_llm_engine` | Grounded generation and safety policy | `decision_engine/` |
+| `08_recommendation_feedback` | Evaluation, evidence and future feedback loop | `recommendation_feedback/evaluation/` |
 
 ## Quick start
 

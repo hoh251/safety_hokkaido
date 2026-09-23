@@ -1,3 +1,3 @@
 # Environment
 
-External adapters use `requests` and belong in `02_api_backend/src/tools.py` until extracted into a dedicated package. Secrets are read from `.env`.
+External adapters use `requests` in `external_data/tools.py`. Secrets are read from `02_api_backend/.env`.

@@ -1,3 +1,3 @@
 # Environment
 
-Knowledge retrieval currently uses FAISS, BM25, sentence-transformers, and an optional cross-encoder reranker in `02_api_backend/src/`.
+Knowledge retrieval is implemented in `risk_knowledge/` and uses FAISS, BM25, sentence-transformers, and an optional cross-encoder reranker.

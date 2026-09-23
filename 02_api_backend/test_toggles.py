@@ -1,4 +1,5 @@
-from src.generator import Generator
+import test_bootstrap  # noqa: F401
+from decision_engine.generator import Generator
 
 g = Generator()
 query = "What is the weather in Sapporo?"

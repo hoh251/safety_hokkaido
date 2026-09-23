@@ -5,12 +5,12 @@ import sys
 # Add parent directory to path so we can import src from inside the evaluation folder
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.embedding_model import EmbeddingModel
-from src.hybrid_retriever import HybridRetriever
+from data_integration.embedding_model import EmbeddingModel
+from risk_knowledge.hybrid_retriever import HybridRetriever
 from config import config
-from evaluation.metrics import calculate_hit_rate, calculate_mrr
+from recommendation_feedback.evaluation.metrics import calculate_hit_rate, calculate_mrr
 
-from src.query_transform import QueryTransformer
+from agent_core.query_transform import QueryTransformer
 
 def run_retrieval_eval():
     print("Loading Golden Dataset...")

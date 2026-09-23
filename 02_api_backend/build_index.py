@@ -1,8 +1,19 @@
 import os
-from src.document_loader import load_all_data
-from src.embedding_model import EmbeddingModel
-from src.vector_store import VectorStore
-from src.index_meta import IndexMeta
+from pathlib import Path
+import sys
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from runtime import configure_module_paths
+
+configure_module_paths()
+
+from data_integration.document_loader import load_all_data
+from data_integration.embedding_model import EmbeddingModel
+from data_integration.vector_store import VectorStore
+from data_integration.index_meta import IndexMeta
 from config import config
 
 def main():

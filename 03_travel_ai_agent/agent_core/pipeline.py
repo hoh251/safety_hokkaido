@@ -1,10 +1,10 @@
-from src.embedding_model import EmbeddingModel
-from src.hybrid_retriever import HybridRetriever
-from src.rerankers import Reranker
-from src.generator import Generator
-from src.query_transform import QueryTransformer
-from src.memory import global_memory
-from src.router import Router          # DL06: AI Router / Agent
+from data_integration.embedding_model import EmbeddingModel
+from risk_knowledge.hybrid_retriever import HybridRetriever
+from risk_knowledge.rerankers import Reranker
+from decision_engine.generator import Generator
+from agent_core.query_transform import QueryTransformer
+from agent_core.memory import global_memory
+from agent_core.router import Router
 from config import config
 
 
