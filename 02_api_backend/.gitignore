@@ -16,6 +16,10 @@ env/
 # Environment variables (NEVER commit API keys!)
 .env
 .env.*
+.venv/
+.local_deps/
+.pip-cache/
+.pip-tmp/
 
 # Vector database (large binary files)
 vector_db/

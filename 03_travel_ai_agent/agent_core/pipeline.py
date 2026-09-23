@@ -6,6 +6,10 @@ from agent_core.query_transform import QueryTransformer
 from agent_core.memory import global_memory
 from agent_core.router import Router
 from config import config
+from uuid import uuid4
+from data_integration.travel_context import TravelContextBuilder, TravelRequest
+from risk_knowledge.risk_model import LocalRiskModel
+from decision_engine.decision_agent import DecisionAgent
 
 
 class RAGPipeline:
@@ -23,9 +27,12 @@ class RAGPipeline:
         self.generator = Generator()
         self.transformer = QueryTransformer()
         self.router = Router()          # DL06: AI Router / Agent
+        self.context_builder = TravelContextBuilder()
+        self.risk_model = LocalRiskModel()
+        self.decision_agent = DecisionAgent()
         print("RAG Pipeline is online and ready!")
 
-    def ask(self, query: str, chat_history=None, enabled_agents=None):
+    def ask(self, query: str, chat_history=None, enabled_agents=None, travel_request=None):
 
         # ── MEMORY: load conversation history ───────────────────────────────
         if config.USE_MEMORY:
@@ -78,11 +85,28 @@ class RAGPipeline:
         else:
             full_history = chat_history if chat_history else [{"role": "user", "content": query}]
 
-        answer = self.generator.generate(query, final_chunks, full_history, active_agents)
+        traveler = TravelRequest(**(travel_request or {}))
+        travel_context = self.context_builder.build(traveler, active_agents).as_dict()
+        risk = self.risk_model.assess(travel_context, evidence_count=len(final_chunks)).as_dict()
+        recommendation = self.decision_agent.decide(risk, travel_context["route"]).as_dict()
+        recommendation["id"] = str(uuid4())
+        answer = self.generator.generate(
+            query,
+            final_chunks,
+            full_history,
+            active_agents,
+            travel_context=travel_context,
+            recommendation=recommendation,
+        )
 
         # ── MEMORY: save exchange ────────────────────────────────────────────
         if config.USE_MEMORY:
             global_memory.add_user_message(query)
             global_memory.add_ai_message(answer)
 
-        return answer
+        return {
+            "reply": answer,
+            "recommendation": recommendation,
+            "risk": risk,
+            "sources": {"generated_at": travel_context["generated_at"], "route": travel_context["route"]},
+        }

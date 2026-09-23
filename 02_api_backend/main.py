@@ -16,8 +16,10 @@ import uvicorn
 
 # Import our newly built RAG Pipeline
 from agent_core.pipeline import RAGPipeline
+from recommendation_feedback.feedback_store import Feedback, FeedbackStore
 
 app = FastAPI()
+feedback_store = FeedbackStore()
 
 app.add_middleware(
     CORSMiddleware,
@@ -40,6 +42,12 @@ class ChatRequest(BaseModel):
     message: Optional[str] = None
     messages: Optional[List[Dict[str, str]]] = None
     enabled_agents: Optional[Dict[str, bool]] = {"weather": True, "disaster": True, "train": True}
+    travel: Optional[Dict[str, str]] = None
+
+class FeedbackRequest(BaseModel):
+    recommendation_id: str
+    useful: bool
+    comment: Optional[str] = None
 
 @app.get("/")
 def read_root():
@@ -54,13 +62,11 @@ def ask_ai(req: ChatRequest):
         # DL05 Contextual Handling: Next.js sends the full 'messages' array
         if req.messages and len(req.messages) > 0:
             latest_message = req.messages[-1].get("content", "")
-            answer = pipeline.ask(latest_message, chat_history=req.messages, enabled_agents=req.enabled_agents)
-            return {"reply": answer}
+            return pipeline.ask(latest_message, chat_history=req.messages, enabled_agents=req.enabled_agents, travel_request=req.travel)
             
         # Legacy fallback
         elif req.message:
-            answer = pipeline.ask(req.message, enabled_agents=req.enabled_agents)
-            return {"reply": answer}
+            return pipeline.ask(req.message, enabled_agents=req.enabled_agents, travel_request=req.travel)
             
         else:
             raise HTTPException(status_code=400, detail="Empty query provided.")
@@ -74,6 +80,15 @@ def reset_memory():
     from agent_core.memory import global_memory
     global_memory.clear()
     return {"status": "Memory wiped."}
+
+@app.post("/feedback")
+def submit_feedback(req: FeedbackRequest):
+    payload = req.model_dump() if hasattr(req, "model_dump") else req.dict()
+    return feedback_store.submit(Feedback(**payload))
+
+@app.get("/feedback/summary")
+def feedback_summary():
+    return feedback_store.summary()
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)

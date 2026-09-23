@@ -13,7 +13,7 @@ class Generator:
         self.api_url = "https://api.groq.com/openai/v1/chat/completions"
         self.model = config.LLM_MODEL
 
-    def generate(self, query, context_chunks, chat_history=None, enabled_agents=None):
+    def generate(self, query, context_chunks, chat_history=None, enabled_agents=None, travel_context=None, recommendation=None):
         if not config.USE_LLM:
             return "DEBUG MODE (LLM OFF):\n\n" + "\n\n".join([f"[{c['metadata']['situation']}] {c['text']}" for c in context_chunks])
             
@@ -22,23 +22,28 @@ class Generator:
             
         context_str = "\n\n".join([f"Source ({c['metadata']['situation']}): {c['text']}" for c in context_chunks])
         system_prompt = config.SYSTEM_PROMPT.replace("{context}", context_str)
+        if travel_context:
+            system_prompt += "\n\nVerified travel-context snapshot:\n" + json.dumps(travel_context, ensure_ascii=False)
+        if recommendation:
+            system_prompt += "\n\nDeterministic safety decision (do not override it):\n" + json.dumps(recommendation, ensure_ascii=False)
         
         # Dynamically build the tools array based on toggles
         active_tools = []
-        if enabled_agents.get("weather"):
-            active_tools.append(WEATHER_TOOL_SCHEMA)
-        else:
-            system_prompt = system_prompt.replace("- use `get_weather_for_city` if asked about current weather or driving conditions.", "")
-            
-        if enabled_agents.get("disaster"):
-            active_tools.append(DISASTER_TOOL_SCHEMA)
-        else:
-            system_prompt = system_prompt.replace("- use `get_disaster_warnings` if asked about current earthquakes, warnings, or if it is safe to travel today.", "")
-            
-        if enabled_agents.get("train"):
-            active_tools.append(TRAIN_TOOL_SCHEMA)
-        else:
-            system_prompt = system_prompt.replace("- use `check_train_status` if asked about JR Hokkaido trains, airport access, or transit delays.", "")
+        if not travel_context:
+            if enabled_agents.get("weather"):
+                active_tools.append(WEATHER_TOOL_SCHEMA)
+            else:
+                system_prompt = system_prompt.replace("- use `get_weather_for_city` if asked about current weather or driving conditions.", "")
+
+            if enabled_agents.get("disaster"):
+                active_tools.append(DISASTER_TOOL_SCHEMA)
+            else:
+                system_prompt = system_prompt.replace("- use `get_disaster_warnings` if asked about current earthquakes, warnings, or if it is safe to travel today.", "")
+
+            if enabled_agents.get("train"):
+                active_tools.append(TRAIN_TOOL_SCHEMA)
+            else:
+                system_prompt = system_prompt.replace("- use `check_train_status` if asked about JR Hokkaido trains, airport access, or transit delays.", "")
             
         if not active_tools:
             system_prompt = system_prompt.replace("6. You have access to real-time tools. You MUST use them when relevant:", "6. You do NOT have access to live real-time tools right now. Answer using ONLY the context provided.")
